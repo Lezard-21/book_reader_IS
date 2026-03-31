@@ -1,5 +1,7 @@
 # Astro Starter Kit: Basics
 
+In this proyect i used opencode free models to make the scaffoldings of the web app mayor logic code was writen by me the creator
+
 ```sh
 npm create astro@latest -- --template basics
 ```
