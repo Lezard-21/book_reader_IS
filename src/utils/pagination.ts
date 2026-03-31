@@ -1,4 +1,5 @@
 import type { Page } from '../stores/readerStore';
+import { processText, type ProcessedPage } from './textProcessor';
 
 export interface PaginationOptions {
   fontSize: number;
@@ -14,53 +15,42 @@ export function paginateByHeight(
   rawPages: { content: string }[],
   options: PaginationOptions
 ): Page[] {
-  const { fontSize, lineHeight, fontFamily, width, height, paddingX, paddingY } = options;
+  const { fontSize, lineHeight, width, height, paddingX, paddingY } = options;
   
-  const contentWidth = width - paddingX * 2;
   const contentHeight = height - paddingY * 2;
-  
-  const avgCharWidth = fontSize * 0.5;
-  const charsPerLine = Math.floor(contentWidth / avgCharWidth);
   const lineHeightPx = fontSize * lineHeight;
-  const linesPerPage = Math.floor(contentHeight / lineHeightPx);
-  const charsPerPage = charsPerLine * linesPerPage;
+  const maxLinesPerPage = Math.floor(contentHeight / lineHeightPx);
   
   const pages: Page[] = [];
   let pageId = 0;
   
   for (const rawPage of rawPages) {
-    const text = rawPage.content;
-    if (!text || text.length === 0) {
+    const paragraphs = processText(rawPage.content);
+    
+    if (paragraphs.length === 0) {
       pages.push({ id: pageId++, content: '' });
       continue;
     }
     
-    const cleanText = text.replace(/\s+/g, ' ').trim();
-    let remainingText = cleanText;
+    let currentPageParagraphs: string[] = [];
+    let currentLineCount = 0;
     
-    while (remainingText.length > 0) {
-      let chunkSize = charsPerPage;
+    for (const paragraph of paragraphs) {
+      const paraLines = Math.ceil(paragraph.length / 40);
+      const estimatedParaHeight = paraLines * lineHeightPx;
       
-      if (remainingText.length <= chunkSize) {
-        pages.push({ id: pageId++, content: remainingText });
-        break;
+      if (currentLineCount + paraLines > maxLinesPerPage && currentPageParagraphs.length > 0) {
+        pages.push({ id: pageId++, content: currentPageParagraphs.join('\n\n') });
+        currentPageParagraphs = [];
+        currentLineCount = 0;
       }
       
-      const chunk = remainingText.slice(0, chunkSize);
-      const lastSpace = chunk.lastIndexOf(' ');
-      const lastNewline = chunk.lastIndexOf('\n');
-      const breakPoint = Math.max(lastSpace, lastNewline);
-      
-      if (breakPoint > chunkSize * 0.7) {
-        chunkSize = breakPoint;
-      }
-      
-      const pageContent = remainingText.slice(0, chunkSize).trim();
-      if (pageContent) {
-        pages.push({ id: pageId++, content: pageContent });
-      }
-      
-      remainingText = remainingText.slice(chunkSize).trim();
+      currentPageParagraphs.push(paragraph);
+      currentLineCount += paraLines + lineHeightPx * 0.5;
+    }
+    
+    if (currentPageParagraphs.length > 0) {
+      pages.push({ id: pageId++, content: currentPageParagraphs.join('\n\n') });
     }
   }
   
