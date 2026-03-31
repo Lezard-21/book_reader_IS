@@ -1,48 +1,90 @@
-# Astro Starter Kit: Basics
+# Book Reader
 
-In this proyect i used opencode free models to make the scaffoldings of the web app mayor logic code was writen by me the creator
+## Features
+
+- **PDF Text Extraction** - Client-side PDF parsing using PDF.js with position-based text reconstruction
+- **Book-like Formatting** - Proper paragraph handling (hyphenation repair, line break fixing)
+- **Dynamic Pagination** - Height-based pagination for consistent reading experience
+- **Customizable Themes** - Dark (default), Sepia, and Soft Gray themes
+- **Typography Controls** - Adjustable font size, line height, and font family
+- **Navigation** - Arrow keys for page navigation, space for next page
+- **Reading Progress** - Persistent reading position and progress bar
+- **Settings Panel** - Theme and typography controls with easy access
+
+## Tech Stack
+
+- **Astro** - Static site generator and meta-framework
+- **React** - UI components
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **PDF.js** - Client-side PDF text extraction
+- **Nanostores** - Lightweight state management
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── Reader/
+│   │   ├── BookReader.tsx      # Main component - handles PDF upload, navigation, settings
+│   │   ├── PageView.tsx        # Renders pages with paragraph styling
+│   │   ├── PageControls.tsx    # Navigation arrows
+│   │   └── ProgressBar.tsx    # Reading progress
+│   ├── Config/
+│   │   └── SettingsPanel.tsx   # Theme/font settings panel
+│   └── UI/
+│       └── FileUploader.tsx     # PDF upload component
+├── stores/
+│   └── readerStore.ts           # Nanostores state management
+├── utils/
+│   ├── pdfExtractor.ts          # Position-based PDF text extraction
+│   ├── pagination.ts           # Dynamic height pagination
+│   └── textProcessor.ts        # Text cleaning pipeline
+├── pages/
+│   └── index.astro             # Main page
+├── layouts/
+│   └── Layout.astro           # HTML layout with CSS variables
+└── styles/
+    └── global.css              # Tailwind CSS import
+```
+
+## Getting Started
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
+## Commands
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
 | `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run dev -- --host`             | Starts local dev server at `localhost:4321`      |
 | `npm run build`           | Build your production site to `./dist/`          |
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## Keyboard Controls
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **Space** - Next page
+- **Left Arrow** - Previous page
+- **Right Arrow** - Next page
+- **Up/Down Arrows** - Scroll within current page
+- **Escape** - Close settings panel
+
+## Theme Options
+
+- **Dark** (default) - Easy on the eyes for low-light reading
+- **Sepia** - Warm, classic book feel
+- **Soft Gray** - Clean, minimal look
+
+
+## TODO
+- format the titles and sub-titles
+- make modular the proyect and separate the logic from the view (frontend and backend)
+- change the programing languaje for the extraction of the backend
+- efficient extraction of the images
+- make the UI configurable 
+
