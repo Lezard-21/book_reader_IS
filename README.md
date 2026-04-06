@@ -1,70 +1,130 @@
 # Book Reader
 
-## Features
+This Application is an experiment to learn how to use ai in programing here mi thougs:
+- In fact ai is very usefull to make somthing usable but it doenst make all by herself.
+- to have the context of the generated code is necesary generate blocks of code in small pices.
+- is necesary to make a metodology for generate the blocks of code in a efficient way.
 
-- **PDF Text Extraction** - Client-side PDF parsing using PDF.js with position-based text reconstruction
-- **Book-like Formatting** - Proper paragraph handling (hyphenation repair, line break fixing)
-- **Dynamic Pagination** - Height-based pagination for consistent reading experience
-- **Customizable Themes** - Dark (default), Sepia, and Soft Gray themes
-- **Typography Controls** - Adjustable font size, line height, and font family
-- **Navigation** - Arrow keys for page navigation, space for next page
-- **Reading Progress** - Persistent reading position and progress bar
-- **Settings Panel** - Theme and typography controls with easy access
+A full-stack PDF reading application with server-side text extraction and a book-like reading experience.
+
+## Overview
+
+Book Reader consists of:
+- **Frontend**: An Astro/React app for displaying PDFs in a book-reading format
+- **Backend**: A FastAPI service for extracting text from PDF files
 
 ## Tech Stack
 
-- **Astro** - Static site generator and meta-framework
-- **React** - UI components
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **PDF.js** - Client-side PDF text extraction
-- **Nanostores** - Lightweight state management
+### Frontend
+- Astro (static site generator + meta-framework)
+- React (UI components)
+- TypeScript
+- Tailwind CSS
+- Nanostores (state management)
+
+### Backend
+- FastAPI (Python web framework)
+- pdfplumber (PDF text extraction)
+- Uvicorn (ASGI server)
 
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── Reader/
-│   │   ├── BookReader.tsx      # Main component - handles PDF upload, navigation, settings
-│   │   ├── PageView.tsx        # Renders pages with paragraph styling
-│   │   ├── PageControls.tsx    # Navigation arrows
-│   │   └── ProgressBar.tsx    # Reading progress
-│   ├── Config/
-│   │   └── SettingsPanel.tsx   # Theme/font settings panel
-│   └── UI/
-│       └── FileUploader.tsx     # PDF upload component
-├── stores/
-│   └── readerStore.ts           # Nanostores state management
-├── utils/
-│   ├── pdfExtractor.ts          # Position-based PDF text extraction
-│   ├── pagination.ts           # Dynamic height pagination
-│   └── textProcessor.ts        # Text cleaning pipeline
-├── pages/
-│   └── index.astro             # Main page
-├── layouts/
-│   └── Layout.astro           # HTML layout with CSS variables
-└── styles/
-    └── global.css              # Tailwind CSS import
+book_reader/
+├── backend/                    # FastAPI backend
+│   ├── app/
+│   │   ├── extract/
+│   │   │   ├── pdf_processor.py    # PDF text extraction
+│   │   │   └── text_processor.py   # Text cleaning pipeline
+│   │   ├── models.py              # Pydantic models
+│   │   └── router.py              # API endpoints
+│   ├── main.py                    # FastAPI app entry point
+│   └── pyproject.toml             # Python dependencies (uv)
+├── frontend/                     # Astro/React frontend
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Reader/            # Book reading components
+│   │   │   ├── Config/            # Settings panel
+│   │   │   └── UI/                # File uploader
+│   │   ├── stores/                # Nanostores state
+│   │   ├── utils/                 # Pagination utilities
+│   │   ├── pages/                 # Astro pages
+│   │   ├── layouts/               # HTML layouts
+│   │   └── styles/                # Global styles
+│   └── package.json
+└── README.md
 ```
 
-## Getting Started
+## Features
 
+- **PDF Text Extraction** - Server-side PDF parsing using pdfplumber
+- **Book-like Formatting** - Proper paragraph handling (hyphenation repair, line break fixing)
+- **Dynamic Pagination** - Height-based pagination for consistent reading
+- **Customizable Themes** - Dark, Sepia, and Soft Gray themes
+- **Typography Controls** - Adjustable font size, line height, and font family
+- **Navigation** - Arrow keys for page navigation, space for next page
+- **Reading Progress** - Persistent reading position and progress bar
+- **Settings Panel** - Theme and typography controls
+
+## Prerequisites
+
+- Node.js 22+
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) for Python package management
+
+## Setup
+
+1. **Install frontend dependencies:**
 ```sh
+cd frontend
 npm install
+```
+
+2. **Install backend dependencies:**
+```sh
+cd backend
+uv sync
+```
+
+## Running the Application
+
+1. **Start the backend server** (Terminal 1):
+```sh
+cd backend
+uv run uvicorn main:app --reload --port 8000
+```
+
+2. **Start the frontend dev server** (Terminal 2):
+```sh
+cd frontend
 npm run dev
 ```
 
-## Commands
+3. Open `http://localhost:4321` in your browser
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev -- --host`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## API Endpoints
+
+### POST /api/extract
+Extract text from a PDF file.
+
+**Request:**
+- Content-Type: `multipart/form-data`
+- Body: `file` (PDF file)
+
+**Response:**
+```json
+{
+  "file_name": "document.pdf",
+  "total_pages": 42,
+  "pages": [
+    { "page_num": 1, "content": "..." },
+    { "page_num": 2, "content": "..." }
+  ]
+}
+```
+
+### GET /health
+Health check endpoint.
 
 ## Keyboard Controls
 
@@ -74,17 +134,18 @@ npm run dev
 - **Up/Down Arrows** - Scroll within current page
 - **Escape** - Close settings panel
 
-## Theme Options
+## Commands
 
-- **Dark** (default) - Easy on the eyes for low-light reading
-- **Sepia** - Warm, classic book feel
-- **Soft Gray** - Clean, minimal look
+### Frontend
+| Command           | Action                              |
+| :---------------- | :--------------------------------- |
+| `npm install`     | Install dependencies               |
+| `npm run dev`     | Start dev server at `localhost:4321` |
+| `npm run build`   | Build production site to `./dist/` |
+| `npm run preview` | Preview build locally              |
 
-
-## TODO
-- format the titles and sub-titles
-- make modular the proyect and separate the logic from the view (frontend and backend)
-- change the programing languaje for the extraction of the backend
-- efficient extraction of the images
-- make the UI configurable 
-
+### Backend
+| Command                              | Action                    |
+| :----------------------------------- | :------------------------ |
+| `cd backend && uv sync`             | Install Python dependencies |
+| `cd backend && uv run uvicorn main:app --reload` | Start API server |

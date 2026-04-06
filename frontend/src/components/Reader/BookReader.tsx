@@ -7,6 +7,7 @@ import {
   $fileName,
   $error,
   $settings,
+  $uploadProgress,
   resetReader,
   loadSettings,
   loadReadingPosition,
@@ -28,6 +29,7 @@ export default function BookReader() {
   const fileName = useStore($fileName);
   const error = useStore($error);
   const settings = useStore($settings);
+  const uploadProgress = useStore($uploadProgress);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,31 +73,50 @@ export default function BookReader() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://localhost:8000/api/extract', {
-        method: 'POST',
-        body: formData,
+      const response = await new Promise<{ pages: Array<{ page_num: number; content: string }> }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const progress = Math.round((e.loaded / e.total) * 100);
+            $uploadProgress.set(progress);
+          }
+        };
+        
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              resolve(JSON.parse(xhr.responseText));
+            } catch {
+              reject(new Error('Invalid response'));
+            }
+          } else {
+            reject(new Error('Failed to extract text from PDF'));
+          }
+        };
+        
+        xhr.onerror = () => reject(new Error('Failed to extract text from PDF'));
+        
+        xhr.open('POST', 'http://localhost:8000/api/extract');
+        xhr.send(formData);
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to extract text from PDF');
-      }
-
-      const data = await response.json();
-
-      if (!data.pages || data.pages.length === 0) {
+      if (!response.pages || response.pages.length === 0) {
         $error.set('Could not extract text from this PDF. The file may contain images or have a complex layout.');
         setIsLoading(false);
+        $uploadProgress.set(0);
         return;
       }
 
-      const totalChars = data.pages.reduce((acc: number, page: { content: string }) => acc + page.content.length, 0);
+      const totalChars = response.pages.reduce((acc: number, page: { content: string }) => acc + page.content.length, 0);
       if (totalChars < 100) {
         $error.set('Could not extract text from this PDF. The file may contain images or have a complex layout.');
         setIsLoading(false);
+        $uploadProgress.set(0);
         return;
       }
 
-      const extractedPages = data.pages.map((page: { page_num: number; content: string }) => ({
+      const extractedPages = response.pages.map((page: { page_num: number; content: string }) => ({
         pageNum: page.page_num,
         content: page.content,
       }));
@@ -125,6 +146,7 @@ export default function BookReader() {
       $error.set('Failed to process PDF. Please try another file.');
     } finally {
       setIsLoading(false);
+      $uploadProgress.set(0);
     }
   }, [settings]);
 
@@ -166,9 +188,16 @@ export default function BookReader() {
     );
   }
 
+  const showUploadProgress = isLoading && uploadProgress > 0 && uploadProgress < 100;
+
   return (
     <div class="h-screen flex flex-col">
-      <ProgressBar />
+      {(showUploadProgress || pages.length > 0) && <ProgressBar />}
+      {showUploadProgress && (
+        <div class="absolute top-2 left-1/2 -translate-x-1/2 text-xs text-[--text-secondary]">
+          Uploading... {uploadProgress}%
+        </div>
+      )}
 
       <header class="flex items-center justify-between px-6 py-3 bg-[--bg-secondary] border-b border-[--border]">
         <div class="flex items-center gap-4">

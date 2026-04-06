@@ -15,6 +15,7 @@ export interface Page {
 }
 
 export const $isLoading = atom(false);
+export const $uploadProgress = atom(0);
 export const $error = atom<string | null>(null);
 export const $fileName = atom<string | null>(null);
 export const $pages = atom<Page[]>([]);
@@ -67,4 +68,5 @@ export function resetReader() {
   $totalPages.set(0);
   $fileName.set(null);
   $error.set(null);
+  $uploadProgress.set(0);
 }

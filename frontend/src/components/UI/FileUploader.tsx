@@ -14,15 +14,15 @@ export default function FileUploader({ onFileSelect, isLoading }: FileUploaderPr
   }, [onFileSelect]);
 
   return (
-    <div class="flex flex-col items-center justify-center min-h-[60vh]">
-      <div class="text-center space-y-6">
-        <div class="text-6xl">📚</div>
-        <h1 class="text-3xl font-light text-[--text-primary]">Book Reader</h1>
-        <p class="text-[--text-secondary] max-w-md">
+    <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="text-center space-y-6">
+        <div className="text-6xl">📚</div>
+        <h1 className="text-3xl font-light text-[--text-primary]">Book Reader</h1>
+        <p className="text-[--text-secondary] max-w-md">
           Upload a PDF to start reading in a comfortable, distraction-free environment
         </p>
         
-        <label class="inline-flex items-center gap-2 px-6 py-3 bg-[--accent] text-white rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
+        <label className="inline-flex items-center gap-2 px-6 py-3 bg-[--accent] text-white rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
           {isLoading ? (
             <>
               <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -43,12 +43,12 @@ export default function FileUploader({ onFileSelect, isLoading }: FileUploaderPr
             type="file"
             accept=".pdf,application/pdf"
             onChange={handleFileChange}
-            class="hidden"
+            className="hidden"
             disabled={isLoading}
           />
         </label>
         
-        <p class="text-sm text-[--text-secondary] opacity-60">
+        <p className="text-sm text-[--text-secondary] opacity-60">
           Only PDF files are supported
         </p>
       </div>
