@@ -1,9 +1,11 @@
 # Book Reader
 
-This Application is an experiment to learn how to use ai in programing here mi thougs:
-- In fact ai is very usefull to make somthing usable but it doenst make all by herself.
-- to have the context of the generated code is necesary generate blocks of code in small pices.
-- is necesary to make a metodology for generate the blocks of code in a efficient way.
+This application is an experiment to learn how to use AI in programming. Here are my thoughts:
+
+    In fact, AI is very useful to make something usable, but it doesn't make it all by itself.
+    To have the context of the generated code, it is necessary to generate blocks of code in small pieces.
+    It is necessary to make a methodology for generating the blocks of code efficiently.
+
 
 A full-stack PDF reading application with server-side text extraction and a book-like reading experience.
 
